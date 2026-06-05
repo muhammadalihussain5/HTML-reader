@@ -31,6 +31,7 @@ Since CSS and JavaScript are embedded directly in the HTML file, the project con
 ```bash
 cd html-to-readable
 
+
 3. **Open the project in your browser**:
 # On desktop: double-click index.html or right-click → Open with Browser
 # On mobile: use a file manager or GitHub Pages deployment to open index.html
