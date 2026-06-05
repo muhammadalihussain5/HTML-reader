@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>html to readable</title>
+    <style>
+        :root {
+            --ink: #1f1b14;
+            --paper: #f7f2e9;
+            --accent: #c07b2f;
+            --border: #dfd4c2;
+            --shadow: 0 12px 30px rgba(31, 27, 20, 0.12);
+        }
+
+        body {
+            margin: 0;
+            padding: 48px 20px;
+            font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+            background: radial-gradient(circle at top, #fff7e6, #f2e7d5 55%, #e8dbc6);
+            color: var(--ink);
+        }
+
+        .source-html {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+
+        .source-html__header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            letter-spacing: 0.5px;
+        }
+
+        .source-html__hint {
+            margin: 0 0 20px;
+            color: #4b4235;
+        }
+
+        .source-html__outline {
+            border: 2px dashed var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            background: #fffaf2;
+        }
+
+        .source-html__box {
+            min-height: 220px;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #d7c7b0;
+            background: #fffefc;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #352b1f;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .source-html__box:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(192, 123, 47, 0.25);
+        }
+
+        .html-input,
+        .html-output {
+            margin-top: 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            background: #fff8ee;
+        }
+
+        .html-input h2,
+        .html-output h2 {
+            margin: 0 0 12px;
+            font-size: 20px;
+        }
+
+        .html-input textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid #d7c7b0;
+            background: #fffefc;
+            font-family: "Consolas", "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #352b1f;
+            box-sizing: border-box;
+            resize: none;
+            overflow: hidden;
+        }
+
+        .html-input textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(192, 123, 47, 0.25);
+        }
+
+        .html-output__content {
+            min-height: 160px;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid #d7c7b0;
+            background: #fffefc;
+            color: #352b1f;
+            line-height: 1.7;
+        }
+
+        .html-output__actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .copy-button {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            background: var(--accent);
+            color: #fffaf2;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .copy-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .copy-button:not(:disabled):hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(192, 123, 47, 0.3);
+        }
+
+        .html-output__content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .html-output__placeholder {
+            color: #6b5c47;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 28px 16px;
+            }
+
+            .source-html {
+                padding: 24px;
+            }
+
+            .source-html__header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="source-html" aria-labelledby="source-html-title">
+        <header class="source-html__header">
+            <h1 id="source-html-title">Paste HTML to Convert</h1>
+            <p class="source-html__hint">Paste the HTML you want to convert into readable form below.</p>
+        </header>
+        <section class="html-input" aria-labelledby="html-input-title">
+            <h2 id="html-input-title">HTML Input</h2>
+            <textarea id="html-input" placeholder="Paste HTML code here..."></textarea>
+        </section>
+        <section class="html-output" aria-labelledby="html-output-title">
+            <h2 id="html-output-title">Translated Output</h2>
+            <div id="readable-output" class="html-output__content" aria-live="polite">
+                <span class="html-output__placeholder">Translated content will appear here.</span>
+            </div>
+            <div class="html-output__actions">
+                <button id="copy-output" class="copy-button" type="button" disabled>Copy translated text</button>
+            </div>
+        </section>
+    </section>
+    <script>
+        const input = document.getElementById("html-input");
+        const output = document.getElementById("readable-output");
+        const placeholder = output.querySelector(".html-output__placeholder");
+        const copyButton = document.getElementById("copy-output");
+
+        const autoResize = () => {
+            input.style.height = "auto";
+            input.style.height = `${input.scrollHeight}px`;
+        };
+
+        const sanitizeHtml = (html) => {
+            if (!html.trim()) {
+                return "";
+            }
+
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            doc.querySelectorAll("script, style").forEach((node) => node.remove());
+            return doc.body.innerHTML.trim();
+        };
+
+        const handleConvert = () => {
+            const translated = sanitizeHtml(input.value);
+            if (!translated) {
+                output.innerHTML = "<span class=\"html-output__placeholder\">Translated content will appear here.</span>";
+                copyButton.disabled = true;
+                return;
+            }
+            output.innerHTML = translated;
+            copyButton.disabled = false;
+        };
+
+        const copyToClipboard = async (text) => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return;
+            }
+
+            const helper = document.createElement("textarea");
+            helper.value = text;
+            helper.setAttribute("readonly", "");
+            helper.style.position = "absolute";
+            helper.style.left = "-9999px";
+            document.body.appendChild(helper);
+            helper.select();
+            document.execCommand("copy");
+            document.body.removeChild(helper);
+        };
+
+        copyButton.addEventListener("click", async () => {
+            const translatedText = output.textContent.trim();
+            if (!translatedText || output.querySelector(".html-output__placeholder")) {
+                return;
+            }
+
+            try {
+                await copyToClipboard(translatedText);
+            } catch (error) {
+                return;
+            }
+
+            input.value = "";
+            autoResize();
+            handleConvert();
+        });
+
+        input.addEventListener("input", () => {
+            autoResize();
+            handleConvert();
+        });
+
+        window.addEventListener("load", () => {
+            autoResize();
+            handleConvert();
+        });
+    </script>
+</body>
+</html>
