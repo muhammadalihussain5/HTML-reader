@@ -29,7 +29,7 @@ Since CSS and JavaScript are embedded directly in the HTML file, the project con
 
 2. **Navigate into the project folder**:
 ```bash
-cd html-to-readable```
+cd html-to-readable
 
 
 3. **Open the project in your browser**:
